@@ -1,0 +1,34 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.idea/
+
+# Local data and generated artifacts
+data/
+cache/
+tmp/
+logs/
+artifacts/
+reports/generated/
+*.dbn
+*.parquet
+*.csv
+*.csv.gz
+*.zip
+*.zst
+
+# Credentials and local overrides
+secrets/
+credentials/
+*.key
+*.pem
+.vscode/settings.local.json
+

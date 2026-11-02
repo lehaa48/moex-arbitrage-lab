@@ -1,0 +1,85 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "P0: bootstrap environment",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Bootstrap"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P0: verify storage",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "verify-storage"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P2: estimate data request",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P2", "-Entry", "moex_arbitrage_lab.sources.databento_history estimate --config config/requests/one_day.yaml"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P1: ingest MOEX sample",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P1", "-Entry", "moex_arbitrage_lab.sources.tbank_history acquire --config config/requests/one_day.yaml"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P2: ingest COMEX sample (requires approved estimate)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P2", "-Entry", "moex_arbitrage_lab.sources.databento_history acquire --config config/requests/one_day.yaml --require-approved-estimate"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P3: validate raw data",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P3", "-Entry", "moex_arbitrage_lab.normalization validate-raw --config config/requests/one_day.yaml"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P3: build normalized data",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P3", "-Entry", "moex_arbitrage_lab.normalization build --config config/requests/one_day.yaml"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "P3: run one-day lead-lag report",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "stage", "-Stage", "P3", "-Entry", "moex_arbitrage_lab.research run --experiment H-0001 --config config/experiments/h0001_one_day.yaml"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Tests: run relevant tests",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "tests"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Tests: full offline P0 quality gate",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "RemoteSigned", "-File", "${workspaceFolder}\\scripts\\project_env.ps1", "-Task", "quality-gate"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}

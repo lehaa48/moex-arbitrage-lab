@@ -1,0 +1,13 @@
+# Local hooks only: nothing is downloaded from third-party hook repositories.
+# Install once per clone, after the fail-closed bootstrap (scripts/project_env.ps1):
+#     uv run --locked --offline pre-commit install
+# The hook runs scripts/project_env.ps1 before uv starts (ADR-0002 storage guard).
+repos:
+  - repo: local
+    hooks:
+      - id: quality-gate
+        name: offline P0 quality gate (storage preflight, ruff format, ruff, mypy, pytest + coverage)
+        entry: powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File scripts/guarded_quality_gate.ps1
+        language: system
+        pass_filenames: false
+        always_run: true
