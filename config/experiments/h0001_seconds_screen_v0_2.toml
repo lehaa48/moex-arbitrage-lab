@@ -1,0 +1,129 @@
+# H-0001 v0.2 — two-month one-second screen COMEX GCZ6 -> MOEX GDZ6 (frozen protocol config).
+#
+# Frozen BEFORE any market payload was downloaded and before any lead-lag outcome was computed.
+# Every value below is pre-outcome. Changing any byte changes config_sha256; the discovery
+# artifact records that hash and the confirmation step refuses a different one.
+# Spec: docs/tasks/CLAUDE_SECONDS_SCREEN_PIVOT_PROMPT.md (sections "Детерминированные секундные
+# ряды", "Frozen seconds analysis", "Data gate", "Decision rule").
+# Loaded and validated by src/moex_arbitrage_lab/research/seconds_config.py (extra keys refused).
+#
+# Source URLs (cited for the frozen facts; this research workstream ran offline and did not
+# re-retrieve them; the main agent verifies them in the v0.2 experiment document):
+#   Databento OHLCV schema (ohlcv-1s: bars only for seconds with a trade; ts_event = bar open
+#   time; bars built from ts_recv of the source trade messages):
+#     https://databento.com/docs/schemas-and-data-formats/ohlcv
+#   Databento CSV encoding / pretty_px / pretty_ts / map_symbols:
+#     https://databento.com/docs/standards-and-conventions/normalized-encoding
+#   CME Globex gold futures (GC) trading hours, Sun-Fri 17:00-16:00 CT, daily 60-minute break:
+#     https://www.cmegroup.com/markets/metals/precious/gold.contractSpecs.html
+#   CME holiday calendar (US Labor Day 2026-09-07, Columbus Day 2026-10-12):
+#     https://www.cmegroup.com/tools-information/holiday-calendar.html
+#   US daylight saving time 2026 ends Sunday 2026-11-01 02:00 local, so CT = CDT = UTC-5 for
+#   the whole period [2026-09-01T00:00Z, 2026-11-01T00:00Z):
+#     https://www.nist.gov/pml/time-and-frequency-division/popular-links/daylight-saving-time-dst
+#   MOEX GDZ6 contract (GOLD-12.26, expiry 2026-12-18) and session hours:
+#     https://www.moex.com/ru/derivatives/futures-on-commodity/gdz6
+#     https://www.moex.com/n103379
+
+config_version = "h0001_seconds_screen_config_v1"
+hypothesis = "H-0001"
+protocol_version = "v0.2"
+
+[period]
+# Half-open UTC window [start, end).
+start_utc = 2026-09-01T00:00:00Z
+end_utc = 2026-11-01T00:00:00Z
+discovery_month = "2026-09"
+confirmation_month = "2026-10"
+
+[moex]
+instrument_id = "GDZ6_SPBFUT"
+canonical_contract = "MOEX:GD:2026-12-18"
+
+[comex]
+dataset = "GLBX.MDP3"
+schema = "ohlcv-1s"
+stype_in = "raw_symbol"
+raw_symbol = "GCZ6"
+# Batch request encoding (the reader accepts nothing else).
+encoding = "csv"
+compression = "none"
+pretty_px = true
+pretty_ts = false
+map_symbols = true
+# Exact header line expected in every delivered CSV file (any deviation is rejected).
+expected_csv_header = [
+    "ts_event", "rtype", "publisher_id", "instrument_id",
+    "open", "high", "low", "close", "volume", "symbol",
+]
+# Databento rtype of OHLCV-1s records (0x20).
+expected_rtype = 32
+# CME Globex GC session facts (CT = UTC-5 throughout the period).
+utc_offset_hours = -5
+globex_open_local = "17:00"
+globex_close_local = "16:00"
+# A CME trade date D (Mon-Fri) is open [D-1 17:00 CT, D 16:00 CT); Monday's opens Sunday.
+trade_weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+
+[analysis]
+# Seconds; positive lag => COMEX return at t paired with MOEX return at t + lag (COMEX leads).
+lag_grid_s = [-60, -30, -10, -5, -2, -1, 0, 1, 2, 5, 10, 30, 60]
+positive_grid_s = [1, 2, 5, 10, 30, 60]
+staleness_caps_s = [1, 5, 10]
+primary_cap_s = 5
+# Pearson r needs at least this many pairs; otherwise the day/lag/cap cell is undefined.
+min_pairs_for_correlation = 3
+# |r| is clamped to this value before the Fisher z transform (atanh(1) is infinite).
+fisher_r_clamp = 0.999999
+
+[inference]
+seed = 20260901
+replicates = 2000
+# One-sided null quantile (threshold = ceil(q * replicates)-th smallest replicate value).
+null_quantile = 0.95
+# Null: whole-day derangements COMEX(day pi(j)) x MOEX(day j), time-of-day aligned.
+null_method = "day_mismatch_derangement"
+# Placebo: COMEX series rotated circularly by this many seconds on the day time-of-day grid.
+circular_shift_s = 3600
+# Impossible-time control: COMEX of the NEXT included day (same time of day, lag h*) paired
+# with MOEX of day d — information that occurs ~1 day after the MOEX interval completed.
+impossible_time_method = "next_included_day_same_time_of_day"
+
+[data_gate]
+min_confirmation_days = 15
+# Minimum over the positive grid of paired seconds at the primary cap, per included day.
+min_paired_seconds_per_day = 3600
+# Strict: a venue/day is acceptable only if its stale/excluded fraction is BELOW this value.
+max_stale_fraction = 0.5
+# Strict: strongest-day share must be BELOW this value.
+max_strongest_day_share = 0.35
+# share = max_d(s * z_d) / |sum_d z_d|, s = sign(sum_d z_d); z_d = Fisher z of day d at h*,
+# primary cap, confirmation month; share = +inf (fails) when sum_d z_d == 0.
+strongest_day_share_definition = "max_signed_day_z_over_abs_sum_z"
+# Observed timestamp quantum (gcd of event nanoseconds) must not exceed one second.
+max_timestamp_quantum_ns = 1000000000
+# Days that fail the per-day quality rules are excluded (reason-coded), never substituted.
+day_quality_rule = "exclude_day"
+
+[decision]
+min_positive_day_share = 0.60
+min_caps_same_sign = 2
+required_cap_s = 5
+max_single_day_share = 0.35
+# A placebo control (circular shift, impossible time) "reproduces" the primary effect when its
+# equal-day statistic is positive and >= the one-sided 95% day-mismatch null threshold; the
+# day-mismatch control reproduces it when the primary statistic does not exceed that threshold.
+# Under the null each placebo exceeds the threshold with probability ~5% (conservative).
+control_reproduces_rule = "positive_and_at_least_null_threshold"
+
+[day_universe]
+# Candidates are all calendar dates of the period; primary = Mon-Fri minus listed exclusions.
+weekend_reason = "weekend_not_primary"
+
+[[day_universe.primary_exclusions]]
+date = 2026-09-07
+reason = "us_labor_day_cme_holiday_schedule"
+
+[[day_universe.primary_exclusions]]
+date = 2026-10-12
+reason = "us_columbus_day_cme_schedule_unverified_conservative"

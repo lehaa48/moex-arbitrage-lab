@@ -4,7 +4,9 @@ Last updated: 2026-11-02 (Asia/Riyadh)
 
 ## Current stage
 
-**P0 accepted** on 2026-11-02 by independent Codex review after two bounded corrective passes. **P1 (MOEX/T‑Bank one-day ingest) is user-authorized and current**; its execution (Phase B of `docs/tasks/CLAUDE_P0_CLOSE_AND_P1_PROMPT.md`) starts only after the Phase A initial commit is pushed to a configured remote. **P2 is blocked.** No market data downloaded; no market-data/provider endpoint contacted; no credentials used; no importers implemented.
+**Current (2026-11-02, ADR-0005): H-0001 v0.2 two-month one-second screen** (`docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`, task `docs/tasks/CLAUDE_SECONDS_SCREEN_PIVOT_PROMPT.md`). The one-day P1 → P3 → five-day → P4 route is deferred, not deleted. Provider contact so far: one T-Bank HEAD (2026-10-06 → 200, `logs/tbank/requests.jsonl`); no trade payload downloaded yet; no credentials used. Databento Step A is blocked until the user sets `DATABENTO_API_KEY` locally; Step B additionally needs explicit approval of the exact estimate.
+
+Previous text (kept): **P0 accepted** on 2026-11-02 by independent Codex review after two bounded corrective passes. **P1 (MOEX/T‑Bank one-day ingest) is user-authorized and current**; its execution (Phase B of `docs/tasks/CLAUDE_P0_CLOSE_AND_P1_PROMPT.md`) starts only after the Phase A initial commit is pushed to a configured remote. **P2 is blocked.** No market data downloaded; no market-data/provider endpoint contacted; no credentials used; no importers implemented.
 
 ## P0 acceptance evidence
 
@@ -20,11 +22,12 @@ Last updated: 2026-11-02 (Asia/Riyadh)
 |---|---|---|
 | A0 planning | accepted for P0 | documents, ADRs, source matrix, migration manifest |
 | P0 bootstrap/migration | **accepted 2026-11-02** | isolated environment, storage guard, migrated tests, ownership-safe raw publication/recovery, evidence above and in `docs/MIGRATION_MANIFEST.md` |
-| P1 MOEX ingest | **user-authorized; current**; execution waits for the Phase A push | one raw daily sample and QA, zero charge |
-| P2 COMEX ingest | blocked: separate authorization + account/cost gate | cost estimate then one raw sample, zero charge |
-| P3 one-day slice | blocked by P1/P2 | normalized/aligned data and report |
-| Five-day pilot | blocked by P3 review | per-day stability report |
-| Full month | blocked by stage approval | preregistered month report |
+| P1 MOEX ingest (one-day route) | superseded by v0.2 screen 2026-11-02; adapter reused | one raw daily sample and QA, zero charge |
+| P2 COMEX ingest (`trades`) | deferred; v0.2 uses `ohlcv-1s` | cost estimate then one raw sample, zero charge |
+| P3 one-day slice | deferred (ADR-0005) | normalized/aligned data and report |
+| Five-day pilot | deferred (ADR-0005) | per-day stability report |
+| Full month | deferred (ADR-0005) | preregistered month report |
+| **H-0001 v0.2 seconds screen** | **current**: protocol frozen; MOEX acquisition pending; Databento Step A blocked (no key) | two-month raw (both venues), 1 s series, September `h*`, October confirmation, one of four categories |
 
 ## Stage history
 
@@ -34,6 +37,8 @@ Last updated: 2026-11-02 (Asia/Riyadh)
 | 2026-11-02 | Codex review: changes required; corrective pass 1 (`CLAUDE_P0_REVIEW_FIX_PROMPT.md`) executed. |
 | 2026-11-02 | Codex review: two ownership/recovery findings; corrective pass 2 (`CLAUDE_P0_REVIEW_FIX2_PROMPT.md`) executed. |
 | 2026-11-02 | Codex final acceptance of P0. Handoff `CLAUDE_P0_CLOSE_AND_P1_PROMPT.md`: exact cleanup, P0 closure, multi-agent skills/profiles, initial commit/push by Claude, then P1 with parallel subagents. |
+| 2026-11-02 | Initial commit `9a28c34` pushed to `origin/main` (`https://github.com/lehaa48/moex-arbitrage-lab.git`). P1 one-day work started: source verification, adapter, one HEAD probe (2026-10-06 → 200, gzip CSV). |
+| 2026-11-02 | User pivot (`CLAUDE_SECONDS_SCREEN_PIVOT_PROMPT.md`, ADR-0005) before any payload/outcome: two-month one-second screen; v0.1 route deferred. |
 
 ## Known external decisions
 

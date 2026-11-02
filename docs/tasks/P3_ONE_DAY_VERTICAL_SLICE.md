@@ -2,6 +2,8 @@
 
 Status: blocked by accepted P1 and P2 evidence for one common day.
 
+> **2026-11-02 (ADR-0005, append-only):** **deferred.** No separate one-day slice is run; the two-month seconds screen (`docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`) replaces it for the current decision.
+
 ## Objective
 
 Integrate immutable MOEX and COMEX inputs into a reproducible one-day diagnostic run. This validates plumbing and temporal correctness; it cannot confirm H‑0001.

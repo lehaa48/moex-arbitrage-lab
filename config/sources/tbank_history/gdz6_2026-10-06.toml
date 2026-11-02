@@ -1,0 +1,74 @@
+# P1 — T-Bank historical anonymized trades, one GDZ6 day (zero cost, public archive).
+# Main-agent owned. Day chosen by CANDIDATE_DAY_RULE.md v1 (sha256 765a2459...) before any data.
+# Sources (retrieved 2026-11-02):
+#   archive URL pattern, header, field meanings, 30 files/min/IP, no auth in docs/scripts:
+#     https://developer.tbank.ru/invest/services/history-md/head-history-md
+#   instrumentId = ticker + "_" + class_code; SPBFUT = futures on Moscow Exchange:
+#     https://developer.tbank.ru/invest/intro/intro/faq_identification
+#   GDZ6 = GOLD-12.26, USD per troy ounce, lot 1, tick 0.1, cash-settled, last day/expiry 2026-12-18:
+#     https://www.moex.com/ru/derivatives/futures-on-commodity/gdz6
+#   sessions from 2026-09-14: 06:50-09:00, 09:00-19:00, 19:00-23:50 MSK (UTC+3):
+#     https://www.moex.com/n103379 ; trading day synchronized with calendar day: https://www.moex.com/n98363
+#   October 2026 standard schedule (no exceptions): https://www.moex.com/n96571
+
+dataset = "history-trades"
+source_schema = "anonymized-trades-csv"
+source_format_version = "head-history-md-2026-11-02"
+archive_date = 2026-10-06
+url = "https://invest-public-api.tbank.ru/history-trades/2026-10-06?instrumentId=GDZ6_SPBFUT"
+raw_filename = "gdz6_spbfut_2026-10-06.zip"
+payload_format = "zip"
+
+ticker_cc = "GDZ6_SPBFUT"
+# instrument_uid: not published openly (FindInstrument requires a token); observed from the file.
+
+canonical_contract = "MOEX:GD:2026-12-18"
+expiry = 2026-12-18
+currency = "USD"
+price_unit = "USD per troy ounce"
+contract_multiplier = "1"
+tick_size = "0.1"
+
+# TRADE_TS documented as "дата и время сделки по UTC"; clock accuracy/capture point undocumented.
+event_ts_type = "TBANK_TRADE_TS_UTC"
+clock_accuracy_documented = false
+# Corrections/cancellations are not documented for this archive.
+trade_action = "UNKNOWN"
+
+csv_delimiter = ","
+expected_columns = ["TRADE_TS", "TICKER_CC", "DIRECTION", "PRICE", "QUANTITY", "TRADE_SOURCE", "INSTRUMENT_UID"]
+csv_member_pattern = "[^/]+\\.csv"
+max_members = 1
+max_uncompressed_bytes = 1073741824
+
+# Probe-stage allowlist (container ZIP vs plain CSV is contradictory in the docs);
+# narrowed to the observed type before the single GET.
+expected_content_types = ["application/zip", "application/x-zip-compressed", "application/octet-stream", "text/csv"]
+min_bytes = 64
+max_bytes = 268435456
+request_timeout_s = 60.0
+requests_per_minute = 10
+min_request_interval_s = 6.0
+
+license_url = "https://www.tbank.ru/invest/disclaimers/basic-information/"
+license_version = "retrieved-2026-11-02"
+zero_cost_evidence_url = "https://developer.tbank.ru/invest/services/history-md/head-history-md"
+cost_currency = "RUB"
+
+[[sessions]]
+name = "morning"
+start_utc_ns = 1791258600000000000
+end_utc_ns = 1791266400000000000
+trading_date = 2026-10-06
+
+[[sessions]]
+name = "main"
+start_utc_ns = 1791266400000000000
+end_utc_ns = 1791302400000000000
+trading_date = 2026-10-06
+
+[[sessions]]
+name = "evening"
+start_utc_ns = 1791302400000000000
+end_utc_ns = 1791319800000000000
+trading_date = 2026-10-06

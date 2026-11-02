@@ -2,6 +2,8 @@
 
 Status: starts only after P0 acceptance. May run parallel with P2.
 
+> **2026-11-02 (ADR-0005, append-only):** the one-day route of this task is **superseded** for the current decision by the two-month seconds screen (`docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`). The adapter, gates and ownership below remain valid and are reused for Sep–Oct 2026; the single-day selection (`config/sources/tbank_history/CANDIDATE_DAY_RULE.md`, 2026-10-06) is history. One provider request was made under this task: HEAD 2026-10-06 → 200 (`logs/tbank/requests.jsonl`); no payload was downloaded under the one-day route.
+
 ## Objective
 
 Verify and acquire at zero charge one complete GDZ6 trading day from the T‑Bank historical anonymized-trades archive, preserving the raw payload and producing source QA. This task does not run lead-lag analysis or a live recorder.

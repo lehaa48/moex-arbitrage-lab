@@ -2,6 +2,8 @@
 
 Status: starts only after P0 acceptance and user-created Databento account/key. May run parallel with P1. No timeseries data request is authorized by this document alone.
 
+> **2026-11-02 (ADR-0005, append-only):** for the current screen the `trades` request below is **deferred**; the only COMEX request is `GLBX.MDP3` / `ohlcv-1s` / `raw_symbol` / `GCZ6` / `[2026-09-01, 2026-11-01)` as one batch job, under the same two-step cost gate (Step B needs explicit approval of the exact estimate). See `docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`.
+
 ## Objective
 
 Verify GCZ6 coverage and obtain exactly the same chosen calendar/trading overlap as P1 from `GLBX.MDP3`, schema `trades`, without any cash charge.

@@ -163,13 +163,13 @@ def test_scripts_export_exactly_the_python_tool_locations() -> None:
 # --- stage launcher and quality-gate preflight ----------------------------------------------
 
 
+# tbank_history, databento_history and research are implemented since H-0001 v0.2
+# (ADR-0005); the launcher must still fail clearly for modules that do not exist.
 @pytest.mark.parametrize(
     "module",
     [
-        "moex_arbitrage_lab.sources.databento_history",
-        "moex_arbitrage_lab.sources.tbank_history",
         "moex_arbitrage_lab.normalization",
-        "moex_arbitrage_lab.research",
+        "moex_arbitrage_lab.sources.cme_datamine",
     ],
 )
 def test_future_stage_entrypoints_fail_clearly(module: str) -> None:

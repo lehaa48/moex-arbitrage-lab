@@ -11,3 +11,7 @@
 
 The shortest path is P0 → P1/P2 in parallel → P3. Documentation or framework work that does not remove a gate on that path is deferred.
 
+## Update 2026-11-02 — ADR-0005 (append-only)
+
+Steps 3–6 above are **deferred** for the current screening decision. Active route: P0 (accepted) → **H-0001 v0.2 two-month one-second screen** (`docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`): MOEX T-Bank archive Sep–Oct 2026 + COMEX Databento `ohlcv-1s` (exact-estimate approval gate) → September discovery → frozen `h*` → October confirmation → one of four screen categories. A `SCREEN_POSITIVE` result only permits designing a trade-level/top-of-book stage; `NO_SCREEN_SIGNAL` stops the project until a new user decision.
+

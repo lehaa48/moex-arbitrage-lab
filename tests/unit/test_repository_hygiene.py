@@ -94,7 +94,14 @@ def test_rejected_legacy_subsystems_are_absent() -> None:
     package = REPO_ROOT / "src" / "moex_arbitrage_lab"
     present = {p.name for p in package.iterdir() if p.is_dir() and p.name != "__pycache__"}
 
-    assert present == {"contracts", "settings"}
+    # P1 / H-0001 v0.2 add approved historical-archive adapters under sources/ (no live/broker
+    # collectors) and the offline seconds-screen analysis under research/.
+    assert present <= {"contracts", "settings", "sources", "research"}
+    assert {"contracts", "settings"} <= present
+    sources = package / "sources"
+    if sources.exists():
+        adapters = {p.name for p in sources.iterdir() if p.name != "__pycache__"}
+        assert adapters <= {"tbank_history", "databento_history"}
     for rejected in ("collectors", "storage", "replay", "monitoring", "execution", "risk"):
         assert not (package / rejected).exists()
     for module in ("credentials", "credential_manager", "network_policy", "source_registry"):
@@ -149,14 +156,29 @@ def test_no_market_data_files_in_the_project() -> None:
     offenders = [
         p.relative_to(REPO_ROOT)
         # Generated state (tmp, logs, artifacts) is scanned too; only Git internals, the
-        # virtualenv and the uv package cache (third-party archives) are pruned.
-        for p in _walk({".git", ".venv", "cache/uv"})
+        # virtualenv, the uv package cache (third-party archives) and the git-ignored private
+        # raw store ``data/`` (H-0001 v0.2 acquisition, see the test below) are pruned.
+        for p in _walk({".git", ".venv", "cache/uv", "data"})
         if p.name.lower().endswith(MARKET_DATA_SUFFIXES)
     ]
-    data_dir = REPO_ROOT / "data"
 
     assert offenders == []
-    assert not data_dir.exists() or not any(p.is_file() for p in data_dir.rglob("*"))
+
+
+def test_market_data_is_never_tracked_by_git() -> None:
+    # Private raw/derived data may exist only under git-ignored ``data/``; nothing under it
+    # and no market-data file anywhere may be tracked or staged.
+    result = subprocess.run(
+        ["git", "-c", "core.fsmonitor=false", "ls-files", "--cached", "-z"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        check=True,
+        timeout=60,
+    )
+    tracked = [name for name in result.stdout.decode("utf-8").split("\0") if name]
+
+    assert [n for n in tracked if n.startswith("data/")] == []
+    assert [n for n in tracked if n.lower().endswith(MARKET_DATA_SUFFIXES)] == []
 
 
 @pytest.mark.parametrize("location", sorted(str(p) for p in STORAGE_LAYOUT.values()))

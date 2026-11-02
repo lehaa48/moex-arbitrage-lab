@@ -22,3 +22,7 @@ Only `FREE_CONFIRMED` permits the exact bounded request. An estimate of zero or 
 
 Tokens and account balances must be redacted. Any non-zero proposal is a user decision documented before the request.
 
+## Reference 2026-11-02 (ADR-0005, append-only)
+
+The current metered candidate is exactly one Databento batch: `GLBX.MDP3`, `ohlcv-1s`, `raw_symbol`, `GCZ6`, `[2026-09-01T00:00:00Z, 2026-11-01T00:00:00Z)`. Even when the estimate is zero or covered by credit, the exact estimate requires explicit user approval before Step B. The T-Bank anonymized-trades archive is public, unauthenticated and has no documented tariff; its requests are logged in `logs/tbank/requests.jsonl` with decision `FREE_CONFIRMED` and capped at 20 files/min.
+

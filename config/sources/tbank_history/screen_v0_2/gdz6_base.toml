@@ -1,0 +1,70 @@
+# H-0001 v0.2 seconds screen: T-Bank historical anonymized trades, GDZ6_SPBFUT, 2026-09..10.
+# Base template of the per-date TbankHistoryConfig (period.build_day_config adds archive_date,
+# url, raw_filename and the calendar sessions). Main-agent verified facts, retrieved 2026-11-02:
+#
+#   archive: GET https://invest-public-api.tbank.ru/history-trades/{YYYY-MM-DD}?instrumentId=
+#     GDZ6_SPBFUT ; no auth; provider limit 30 files/min/IP (we use <= 20/min, >= 3.0 s apart);
+#     header TRADE_TS,TICKER_CC,DIRECTION,PRICE,QUANTITY,TRADE_SOURCE,INSTRUMENT_UID; TRADE_TS
+#     UTC (example 2018-01-23T07:02:29.315229Z); TRADE_SOURCE EXCHANGE|DEALER; DIRECTION
+#     semantics undocumented (never mapped to an aggressor side):
+#       https://developer.tbank.ru/invest/services/history-md/head-history-md
+#   one HEAD on 2026-10-06 (2026-11-02): 200, Content-Type application/octet-stream,
+#     Content-Disposition "attachment; filename=GDZ6_SPBFUT_2026-10-06.csv.gz", no
+#     Content-Length -> payload_format "gzip" (one gzip member holding one CSV).
+#   instrumentId = ticker + "_" + class code (SPBFUT); it is the archive's request identifier
+#     only, NOT a claim of global uniqueness of ticker+class:
+#       https://developer.tbank.ru/invest/intro/intro/faq_identification
+#   GDZ6 = MOEX GOLD-12.26, canonical MOEX:GD:2026-12-18, USD per troy ounce, lot 1, tick 0.1,
+#     cash-settled: https://www.moex.com/ru/derivatives/futures-on-commodity/gdz6
+#   INSTRUMENT_UID: not configured; observed from the archive (exactly one UUID required),
+#     status OBSERVED_FROM_ARCHIVE_NOT_INDEPENDENTLY_VERIFIED.
+#   sessions: moex_calendar_2026_09_10.toml (date-specific regimes, opening auction separate).
+
+template_id = "screen-v0-2-gdz6-spbfut-2026-09-10"
+period_start = 2026-09-01
+period_end_exclusive = 2026-11-01
+# Canary: first planned GET; an ordinary weekday that is part of the final dataset.
+canary_date = 2026-09-02
+calendar_file = "moex_calendar_2026_09_10.toml"
+url_template = "https://invest-public-api.tbank.ru/history-trades/{date}?instrumentId=GDZ6_SPBFUT"
+raw_filename_template = "gdz6_spbfut_{date}.csv.gz"
+
+[base]
+dataset = "history-trades"
+source_schema = "anonymized-trades-csv"
+source_format_version = "head-history-md-2026-11-02"
+payload_format = "gzip"
+
+ticker_cc = "GDZ6_SPBFUT"
+
+canonical_contract = "MOEX:GD:2026-12-18"
+expiry = 2026-12-18
+currency = "USD"
+price_unit = "USD per troy ounce"
+contract_multiplier = "1"
+tick_size = "0.1"
+
+# TRADE_TS documented as UTC trade time; clock accuracy/capture point undocumented.
+event_ts_type = "TBANK_TRADE_TS_UTC"
+clock_accuracy_documented = false
+# Corrections/cancellations are not documented for this archive.
+trade_action = "UNKNOWN"
+
+csv_delimiter = ","
+expected_columns = ["TRADE_TS", "TICKER_CC", "DIRECTION", "PRICE", "QUANTITY", "TRADE_SOURCE", "INSTRUMENT_UID"]
+# Used by payload_format "zip" only; a gzip member name is raw_filename minus ".gz".
+csv_member_pattern = "[^/]+\\.csv"
+max_members = 1
+max_uncompressed_bytes = 2147483648
+
+expected_content_types = ["application/octet-stream"]
+min_bytes = 20
+max_bytes = 268435456
+request_timeout_s = 60.0
+requests_per_minute = 20
+min_request_interval_s = 3.0
+
+license_url = "https://www.tbank.ru/invest/disclaimers/basic-information/"
+license_version = "retrieved-2026-11-02"
+zero_cost_evidence_url = "https://developer.tbank.ru/invest/services/history-md/head-history-md"
+cost_currency = "RUB"

@@ -30,6 +30,12 @@ Verified against primary/provider documentation on 2026-11-02. No market data wa
 
 P1 uses a bounded archive existence probe for one preregistered weekday and records status/headers without retaining market payload until storage/license gates pass. P2 first uses only free metadata/symbology and `metadata.get_cost` for raw symbol `GCZ6`, dataset `GLBX.MDP3`, schema `trades`, exact UTC range. A timeseries/batch request remains prohibited until the estimate, credit balance and user approval are recorded. Prefer one batch job; Databento documents repeat batch downloads for 30 days without another data charge, while repeated streams are re-metered.
 
+## Corrections and additions 2026-11-02 (append-only; ADR-0005)
+
+- MOEX schedule for October 2026 is the regime effective **2026-09-14** (moex.com/n103379): opening auction 06:50–07:00, morning 07:00–09:00, main 09:00–19:00, evening 19:00–23:50 MSK. The 2026-07-14 regime cited under "Session facts" above applies only to 2026-07-14 … 2026-09-13. The opening auction is separate from continuous trading. Trading day = calendar day since 2026-03-23 (moex.com/n98363); weekend sessions belong to the next working day; October had weekend sessions and the 24–25 October weekend session was cancelled (moex.com/n96571).
+- T-Bank archive: `https://invest-public-api.tbank.ru/history-trades/{YYYY-MM-DD}?instrumentId=GDZ6_SPBFUT` (identifier = ticker + `_` + class code `SPBFUT`; uniqueness is not claimed globally). One HEAD on 2026-10-06 → 200, `application/octet-stream`, `GDZ6_SPBFUT_2026-10-06.csv.gz` (gzip CSV), no auth. UID not openly published (token-only `FindInstrument`); treated as `OBSERVED_FROM_ARCHIVE_NOT_INDEPENDENTLY_VERIFIED`.
+- Databento for the current screen: `GLBX.MDP3` `ohlcv-1s` `GCZ6` (raw_symbol), one batch for `[2026-09-01, 2026-11-01)`. `ohlcv-1s` bars exist only for seconds with trades, `ts_event` = interval start, bars built from source `ts_recv` → provider-observation time, not matching-engine event time. Cost unknown until Step A; `DATABENTO_API_KEY` not yet set.
+
 ## Unresolved gates
 
 1. Exact T‑Bank `TICKER_CC`, `INSTRUMENT_UID`, GDZ6 daily archive availability and coverage for October 2026.

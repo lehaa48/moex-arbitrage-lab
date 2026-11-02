@@ -4,6 +4,8 @@ Claude Code is the primary implementer after explicit user authorization. Codex 
 
 ## Current authorization and stop line
 
+**Current task (2026-11-02, ADR-0005): the H-0001 v0.2 two-month one-second screen** — `docs/tasks/CLAUDE_SECONDS_SCREEN_PIVOT_PROMPT.md`, protocol `docs/experiments/H-0001_SECONDS_SCREEN_V0_2.md`. It supersedes the one-day P1 route described in the next paragraph (kept as history). The only mandatory external stop is Databento Step B (explicit approval of the exact estimate); Step A needs the user-set `DATABENTO_API_KEY`.
+
 **P0 is accepted** (independent Codex acceptance 2026-11-02 after two corrective passes). **P1 is user-authorized and the current stage**, executed per `docs/tasks/CLAUDE_P0_CLOSE_AND_P1_PROMPT.md` Phase B, which starts only after the Phase A commit has been pushed successfully to a configured remote. **P2 is blocked** (separate authorization and cost gate). Do not start P2/P3, lead-lag analysis, trading or any paid request. After P1 evidence, stop for Codex/user review; never self-accept a stage.
 
 Claude Code performs all changes, cleanup, commits and pushes for authorized stages. Never change global Git identity/config, invent a remote URL or create a hosted repository; ask the user instead.

@@ -1,0 +1,106 @@
+# H-0001 v0.2 seconds screen: frozen MOEX derivatives session calendar, 2026-09-01..2026-10-31.
+# Main-agent verified facts (retrieved 2026-11-02); loaded by
+# moex_arbitrage_lab.sources.tbank_history.session_calendar.load_calendar. Times are MSK
+# venue-local (UTC+3, no DST); every window is half-open [start_local, end_local).
+#
+# Sources:
+#   regime from 2026-07-14 (morning 07:00-10:00, main 10:00-19:00):  https://www.moex.com/n101980
+#   regime from 2026-09-14 (morning 07:00-09:00, main 09:00-19:00):  https://www.moex.com/n103379
+#   opening auction 06:50-07:00 and evening 19:00-23:50 in both regimes (same notices).
+#   trading day = calendar day since 2026-03-23; the evening session belongs to the current day:
+#     https://www.moex.com/n98363
+#   weekend (Sat/Sun) sessions belong to the next working day's trading day; they are NOT part
+#   of the primary universe and their dates are never requested (H-0001 v0.2 frozen universe).
+#   2026 holiday regime: no weekday holidays in September/October 2026; NO weekend session on
+#   2026-10-24 and 2026-10-25 (cancelled separately; October weekend sessions otherwise existed
+#   per the screen prompt; this table does not verify each weekend session, as weekends are
+#   non-primary either way): https://www.moex.com/n96571
+#
+# The opening auction is a separate window with continuous = false: its trades are parsed
+# (never outside_verified_session) but it is never a continuous session.
+
+calendar_id = "moex-derivatives-2026-09-10-v1"
+venue = "MOEX"
+utc_offset_hours = 3
+coverage_start = 2026-09-01
+coverage_end_exclusive = 2026-11-01
+trading_day_rule = "calendar_day"
+trading_day_rule_url = "https://www.moex.com/n98363"
+weekend_policy = "not_primary_not_requested"
+weekend_policy_url = "https://www.moex.com/n98363"
+holiday_regime_url = "https://www.moex.com/n96571"
+
+# No weekday holiday, closure or modified schedule in September/October 2026 (n96571).
+exceptions = []
+
+[[regimes]]
+regime_id = "moex-n101980-from-2026-07-14"
+effective_from = 2026-07-14
+effective_to_exclusive = 2026-09-14
+source_url = "https://www.moex.com/n101980"
+
+[[regimes.windows]]
+name = "opening_auction"
+start_local = 06:50:00
+end_local = 07:00:00
+continuous = false
+
+[[regimes.windows]]
+name = "morning"
+start_local = 07:00:00
+end_local = 10:00:00
+continuous = true
+
+[[regimes.windows]]
+name = "main"
+start_local = 10:00:00
+end_local = 19:00:00
+continuous = true
+
+[[regimes.windows]]
+name = "evening"
+start_local = 19:00:00
+end_local = 23:50:00
+continuous = true
+
+[[regimes]]
+regime_id = "moex-n103379-from-2026-09-14"
+effective_from = 2026-09-14
+# Verified only through the end of the screen coverage.
+effective_to_exclusive = 2026-11-01
+source_url = "https://www.moex.com/n103379"
+
+[[regimes.windows]]
+name = "opening_auction"
+start_local = 06:50:00
+end_local = 07:00:00
+continuous = false
+
+[[regimes.windows]]
+name = "morning"
+start_local = 07:00:00
+end_local = 09:00:00
+continuous = true
+
+[[regimes.windows]]
+name = "main"
+start_local = 09:00:00
+end_local = 19:00:00
+continuous = true
+
+[[regimes.windows]]
+name = "evening"
+start_local = 19:00:00
+end_local = 23:50:00
+continuous = true
+
+# Reporting-only weekend facts (weekends are never primary and never requested).
+[[weekend_facts]]
+day = 2026-10-24
+status = "no_weekend_session"
+source_url = "https://www.moex.com/n96571"
+
+[[weekend_facts]]
+day = 2026-10-25
+status = "no_weekend_session"
+source_url = "https://www.moex.com/n96571"
