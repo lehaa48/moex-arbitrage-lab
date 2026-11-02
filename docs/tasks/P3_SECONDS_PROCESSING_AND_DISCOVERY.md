@@ -1,6 +1,7 @@
 # P3 — offline seconds processing and September discovery
 
-Status: authorized for offline execution on 2026-11-02. October confirmation remains forbidden.
+Status: **completed offline on 2026-11-02**. October confirmation remains forbidden and
+`UNOPENED`.
 
 ## Objective
 
@@ -18,6 +19,7 @@ computing any October price-response, return, correlation, lag, or other outcome
 - `src/moex_arbitrage_lab/research/seconds_store.py`
 - `src/moex_arbitrage_lab/research/seconds_screen.py`
 - `tests/unit/research/`
+- `tests/unit/test_repository_hygiene.py` (generated-report ignore integration)
 - `src/moex_arbitrage_lab/sources/databento_history/client.py` (quality-gate-only unused import)
 - `docs/PROJECT_STATUS.md`
 - `docs/experiments/HOLDOUT_LEDGER.md`
@@ -76,3 +78,13 @@ of the Git-owned file set. Existing user changes outside this list are read-only
   inclusion/exclusion rules; HL-0002 remains `UNOPENED`.
 - A repeat build/discovery is deterministic/idempotent or safely refuses without overwrite.
 - `git diff --check`, secrets/hygiene tests, and generated-artifact ignore checks pass.
+
+## Completion evidence
+
+- Code commit: `486c315ff422004bb76f97add297ef5daa66e069`.
+- Config SHA-256: `6619460ef629a1cd0c2e5e5a8c0d0ff01f2fd8990b5c15370b651c01c3000315`.
+- Seconds manifest SHA-256: `dc43c416d54e3170feb489384d3c3beb160976579669876a40b9dd06d4b35222`.
+- September discovery SHA-256: `999003a3cb13b1a8192198eaeb471259286481c272025b999679a97f6afe4cb7`;
+  selected `h*=1 s`.
+- Full guarded offline gate: `1130 passed, 1 skipped`, coverage `92.34%`.
+- `confirm` was not run; no confirmation artifact or opened marker exists.

@@ -155,10 +155,10 @@ def _line(path: Path, number: int) -> str:
 def test_no_market_data_files_in_the_project() -> None:
     offenders = [
         p.relative_to(REPO_ROOT)
-        # Generated state (tmp, logs, artifacts) is scanned too; only Git internals, the
-        # virtualenv, the uv package cache (third-party archives) and the git-ignored private
-        # raw store ``data/`` (H-0001 v0.2 acquisition, see the test below) are pruned.
-        for p in _walk({".git", ".venv", "cache/uv", "data"})
+        # Generated state (tmp, logs, artifacts) is scanned too; Git internals, the virtualenv,
+        # the uv package cache, and the explicitly ignored private market-data/report stores are
+        # pruned. The test below independently proves that none of them is tracked or staged.
+        for p in _walk({".git", ".venv", "cache/uv", "data", "reports/generated"})
         if p.name.lower().endswith(MARKET_DATA_SUFFIXES)
     ]
 
