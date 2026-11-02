@@ -68,3 +68,11 @@ After verified publication, disable `Enable pay as you go`. No analysis outcome 
 - Databento targeted tests after the provider-compatibility fixes: `176 passed`.
 - Ledger: `logs/databento/requests.jsonl`; final decisions `step_b_complete` and
   `FREE_CONFIRMED` with `max_cash_charge_usd=0`.
+
+## Post-run billing confirmation (appended 2026-11-03)
+
+The user reported on 2026-11-03 that the Databento Billing page shows no charge for the
+acquisition jobs ("ничего не списалось"). This closes the pending zero-cash confirmation.
+The independent audit notes that the approval file was written by the operator seconds after
+the Step A estimate and that `actual_cost_usd` stayed null; see
+`docs/experiments/H-0001_SEPTEMBER_AUDIT_AND_EXPLORATION.md` §6.

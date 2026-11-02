@@ -1,6 +1,23 @@
 # Project status
 
-Last updated: 2026-11-02 (Asia/Riyadh)
+Last updated: 2026-11-03 (Asia/Riyadh)
+
+## Update 2026-11-03: audit and September-only exploration
+
+- Independent multi-agent audit of HEAD `3fbe051`: raw data, lineage, September discovery
+  (reproduced exactly by independent code), causality and holdout all PASS; one MAJOR finding —
+  frozen config/code hashes are byte-level over CRLF working-tree files (LF equivalents recorded
+  in HL-0002-ADDENDUM-1; do not edit or re-check-out research code/config before October).
+- September-only exploration (not a protocol result): a COMEX → MOEX next-bar dependence at
+  1–60 s bars (next-bar r 0.21 / 0.29 / 0.28 / 0.16 / 0.10 at 1 / 5 / 10 / 30 / 60 s; ≈0 from
+  120 s; family-wise permutation p = 0.0005; reverse ≈0); the 10 day-gate exclusions do not
+  change it; mechanism (real MOEX lag vs timestamp offset) unresolved.
+- Crude paper economics: gross ≈0.5 bp per trade vs MOEX taker exchange+clearing fee
+  1.32 bp per side; taker round trips do not cover costs; maker economics need order-book data.
+- Databento: user confirmed on 2026-11-03 that no charge occurred.
+- October remains **UNOPENED**. Details: `docs/experiments/H-0001_SEPTEMBER_AUDIT_AND_EXPLORATION.md`.
+- Next stages (each needs explicit authorization): H-0001 v0.3 registration + single October
+  confirmation; read-only forward GDZ6 order-book recording.
 
 ## Current stage
 
@@ -61,6 +78,7 @@ that said data had not yet been downloaded is superseded by the verified evidenc
 | 2026-11-02 | MOEX 44 weekday files and two adjacent COMEX publications verified offline; combined COMEX rows `1,385,912`. |
 | 2026-11-02 | Foundation commit `486c315` recorded the acquisition adapters and seconds pipeline. |
 | 2026-11-02 | P3 offline build/discovery completed: seconds manifest `dc43c416...`, discovery `999003a3...`, `h*=1 s`; October remains UNOPENED. |
+| 2026-11-03 | Independent audit + September-only exploration recorded (`H-0001_SEPTEMBER_AUDIT_AND_EXPLORATION.md`); user confirmed zero Databento charge; October still UNOPENED. |
 
 ## External and safety state
 

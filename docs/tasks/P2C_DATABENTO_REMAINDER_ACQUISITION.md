@@ -77,3 +77,11 @@ The frozen v0.2 protocol originally said one two-month batch. The earlier user-i
 `USD 1` cap required two adjacent, non-overlapping batch jobs instead. Raw observations and
 the frozen interval are unchanged; this operational deviation must remain disclosed in later
 evidence bundles.
+
+## Post-run billing confirmation (appended 2026-11-03)
+
+The user reported on 2026-11-03 that the Databento Billing page shows no charge for the
+acquisition jobs ("ничего не списалось"). This closes the pending zero-cash confirmation.
+The independent audit notes that the approval file was written by the operator seconds after
+the Step A estimate and that `actual_cost_usd` stayed null; see
+`docs/experiments/H-0001_SEPTEMBER_AUDIT_AND_EXPLORATION.md` §6.
