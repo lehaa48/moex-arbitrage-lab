@@ -11,3 +11,9 @@ The ledger is append-only. Dates are UTC unless venue trading dates are explicit
 Opening a holdout requires the frozen identities above and explicit user authorization. If the
 holdout influences a redesign, that period becomes training evidence and a new future holdout
 must be registered.
+
+Frozen MOEX tie policy for HL-0002-FREEZE: observations are stably sorted by `TRADE_TS`;
+equal timestamps retain physical source-row order. The archive supplies no independently
+verified exchange sequence, so exact within-timestamp ordering is unresolved and remains a
+scientific limitation. This policy was applied before September discovery and must not be
+changed for the locked October confirmation.

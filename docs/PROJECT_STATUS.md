@@ -69,3 +69,5 @@ that said data had not yet been downloaded is superseded by the verified evidenc
 - Agents never request, print or persist tokens.
 - Raw data remains immutable and generated raw/derived/report/log files remain ignored by Git.
 - No trading or order-entry capability is authorized or present.
+- MOEX equal-timestamp ordering uses stable physical source-row order because the archive has
+  no verified sequence field; exact within-timestamp exchange order remains unresolved.
