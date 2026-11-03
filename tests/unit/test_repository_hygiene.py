@@ -95,8 +95,9 @@ def test_rejected_legacy_subsystems_are_absent() -> None:
     present = {p.name for p in package.iterdir() if p.is_dir() and p.name != "__pycache__"}
 
     # P1 / H-0001 v0.2 add approved historical-archive adapters under sources/ (no live/broker
-    # collectors) and the offline seconds-screen analysis under research/.
-    assert present <= {"contracts", "settings", "sources", "research"}
+    # collectors) and the offline seconds-screen analysis under research/; H-0001 v0.3 adds the
+    # offline multi-scale confirmation under research_v03/ (research/ stays byte-frozen).
+    assert present <= {"contracts", "settings", "sources", "research", "research_v03"}
     assert {"contracts", "settings"} <= present
     sources = package / "sources"
     if sources.exists():

@@ -1,0 +1,64 @@
+# H-0001 v0.3 — multi-scale COMEX GCZ6 -> MOEX GDZ6 confirmation (frozen protocol config).
+#
+# Registered 2026-11-03 BEFORE any October 2026 outcome was computed or viewed (HL-0002 and
+# HL-0003 October UNOPENED). Motivation: September-only exploration
+# (docs/experiments/H-0001_SEPTEMBER_AUDIT_AND_EXPLORATION.md, section 3). Protocol text:
+# docs/experiments/H-0001_MULTISCALE_V0_3.md. Changing any byte changes config_sha256; the
+# September calibration artifact records it and `confirm` refuses a different one.
+# Loaded and validated by src/moex_arbitrage_lab/research_v03/config.py (extra keys refused).
+
+config_version = "h0001_multiscale_config_v1"
+hypothesis = "H-0001"
+protocol_version = "v0.3"
+
+[inputs]
+# Frozen v0.2 one-second series (HL-0002-FREEZE). Bars are built from these files only.
+seconds_run_id = "p3-20261102-v1"
+seconds_manifest_sha256 = "dc43c416d54e3170feb489384d3c3beb160976579669876a40b9dd06d4b35222"
+# The seconds run was built under the v0.2 config with this exact SHA-256 (CRLF bytes).
+v0_2_config_path = "experiments/h0001_seconds_screen_v0_2.toml"
+v0_2_config_sha256 = "6619460ef629a1cd0c2e5e5a8c0d0ff01f2fd8990b5c15370b651c01c3000315"
+
+[period]
+calibration_month = "2026-09"
+confirmation_month = "2026-10"
+
+[bars]
+# Bar widths (seconds). Every width divides 60; bars are aligned to whole multiples of the
+# width from trading-date 00:00 UTC.
+widths_s = [5, 10, 30, 60]
+# An endpoint state is usable only if its age <= max(staleness_floor_s, width).
+staleness_floor_s = 5
+# Positive lag => COMEX bar u paired with MOEX bar u + lag (COMEX leads).
+forward_lag_bars = 1
+# Reverse control: COMEX bar u paired with MOEX bar u - 1 (MOEX leads).
+reverse_lag_bars = -1
+
+[analysis]
+# A day/width/lag cell needs at least this many pairs, otherwise r is undefined.
+min_pairs_per_cell = 30
+fisher_r_clamp = 0.999999
+
+[inference]
+seed = 20261001
+replicates = 2000
+null_method = "day_mismatch_derangement"
+# Family-wise single-step max-T over the widths (forward: one-sided max T; reverse: max |T|).
+familywise_alpha = 0.05
+
+[data_gate]
+# A day is eligible iff reconciled, common segments present, MOEX timestamp quantum <= 1 s,
+# and r defined with >= min_pairs_per_cell pairs at EVERY width for BOTH forward and reverse.
+min_eligible_days = 15
+max_timestamp_quantum_ns = 1000000000
+
+[decision]
+min_positive_day_share = 0.60
+max_strongest_day_share = 0.35
+# Reverse direction blocks a width when it is family-wise significant (two-sided) AND
+# |reverse statistic| > reverse_max_ratio * forward statistic.
+reverse_max_ratio = 0.25
+
+[day_universe]
+# Same primary universe as v0.2: Mon-Fri minus these dates (no stale-fraction day gate).
+excluded_dates = [2026-09-07, 2026-10-12]
